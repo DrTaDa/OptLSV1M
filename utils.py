@@ -118,11 +118,3 @@ def make_dir(path_dir):
     p = Path(path_dir)
     if not (p.is_dir()):
         p.mkdir(parents=True, exist_ok=True)
-
-
-def save_fig(figures_dir, figure_name, dpi=100):
-    """Save a matplotlib figure"""
-    p = Path(figures_dir) / figure_name.replace("/", "")
-    plt.savefig(str(p), dpi=dpi, bbox_inches="tight")
-    plt.close("all")
-    plt.clf()
