@@ -4,6 +4,8 @@ from datetime import datetime
 import subprocess
 import shutil
 import psutil
+import json
+import sys
 
 from parameters import ParameterSet
 from mozaik.storage.datastore import PickledDataStore
@@ -168,68 +170,45 @@ class Evaluator(ParameterSearch):
         print("Sum scores: ", numpy.sum([score_dict[t.name] for t in self.objectives]))
         return [score_dict[t.name] for t in self.objectives]
 
-def define_objectives():
 
-    objectives = [
-        SpontActivityTarget(name="SpontActivity_V1_Exc_L4", target_value=1.4, sheet_name="V1_Exc_L4", norm=0.2, max_score=10),
-        SpontActivityTarget(name="SpontActivity_V1_Inh_L4", target_value=7.6, sheet_name="V1_Inh_L4", norm=0.4, max_score=10),
-        SpontActivityTarget(name="SpontActivity_V1_Exc_L2/3", target_value=2, sheet_name="V1_Exc_L2/3", norm=0.2, max_score=10),
-        SpontActivityTarget(name="SpontActivity_V1_Inh_L2/3", target_value=4.7, sheet_name="V1_Inh_L2/3", norm=0.4, max_score=10)
-    ]
+def define_targets(opt_config):
 
-    sheet_names = ["V1_Exc_L4", "V1_Inh_L4", "V1_Exc_L2/3", "V1_Inh_L2/3"]
-    for sheet_name in sheet_names:
-        objectives += [
-            IrregularityTarget(name=f"Irregularity_{sheet_name}", target_value=1., sheet_name=sheet_name, norm=0.1, max_score=10),
-            SynchronyTarget(name=f"Synchrony_{sheet_name}", target_value=0., sheet_name=sheet_name, norm=0.01, max_score=10),
-            OrientationTuningPreferenceTarget(
-                name=f"OrientationTuningPreference_{sheet_name}", target_value=5., sheet_name=sheet_name, norm=0.5, max_score=10
-            ),
-            OrientationTuningOrthoHighTarget(
-                name=f"OrientationTuningOrthoHigh_{sheet_name}", target_value=0., sheet_name=sheet_name, norm=0.3, max_score=10
-            ),
-            OrientationTuningOrthoLowTarget(
-                name=f"OrientationTuningOrthoLow_{sheet_name}", target_value=0., sheet_name=sheet_name, norm=0.3, max_score=10
+    targets = []
+    for target_config in opt_config['targets']:
+
+        target_name = target_config["class"] + "_" + target_config["sheet_name"]
+
+        targets.append(
+            getattr(sys.modules[__name__], target_config['class'])(
+                name=target_name,
+                target_value=target_config["target_value"],
+                sheet_name=target_config["sheet_name"],
+                norm=target_config["norm"],
+                max_score=target_config["max_score"]
             )
-        ]
+        )
 
-    return objectives
+    return targets
 
 
-def define_parameters():
+def define_parameters(opt_config):
 
-    parameters = [
-        Parameter(name='sheets.l4_cortex_exc.L4ExcL4ExcConnection.base_weight', lower_bound=0.00014, upper_bound=0.00024),
-        Parameter(name='sheets.l4_cortex_exc.L4ExcL4InhConnection.base_weight', lower_bound=0.00018, upper_bound=0.00027),
-        Parameter(name='sheets.l4_cortex_exc.AfferentConnection.base_weight', lower_bound=0.0016, upper_bound=0.0025),
-
-        Parameter(name='sheets.l4_cortex_inh.L4InhL4ExcConnection.base_weight', lower_bound=0.0008, upper_bound=0.0018),
-        Parameter(name='sheets.l4_cortex_inh.L4InhL4InhConnection.base_weight', lower_bound=0.0011, upper_bound=0.0022),
-        Parameter(name='sheets.l4_cortex_inh.AfferentConnection.base_weight', lower_bound=0.0022, upper_bound=0.0033),
-
-        Parameter(name='sheets.l23_cortex_exc.L23ExcL23ExcConnection.base_weight', lower_bound=0.00007, upper_bound=0.00019),
-        Parameter(name='sheets.l23_cortex_exc.L23ExcL23InhConnection.base_weight', lower_bound=0.00031, upper_bound=0.00039),
-        Parameter(name='sheets.l23_cortex_exc.L4ExcL23ExcConnection.base_weight', lower_bound=0.0008, upper_bound=0.0014),
-        Parameter(name='sheets.l23_cortex_exc.L23ExcL4ExcConnection.base_weight', lower_bound=0.00018, upper_bound=0.00025),
-        Parameter(name='sheets.l23_cortex_exc.L23ExcL4InhConnection.base_weight', lower_bound=0.00020, upper_bound=0.00029),
-
-        Parameter(name='sheets.l23_cortex_inh.L23InhL23ExcConnection.base_weight', lower_bound=0.0014, upper_bound=0.0024),
-        Parameter(name='sheets.l23_cortex_inh.L23InhL23InhConnection.base_weight', lower_bound=0.0003, upper_bound=0.0014),
-        Parameter(name='sheets.l23_cortex_inh.L4ExcL23InhConnection.base_weight', lower_bound=0.0005, upper_bound=0.0015),
-
-        Parameter(name='sheets.l4_cortex_exc.params.cell.params.tau_syn_exc', lower_bound=1.2, upper_bound=1.8),
-        Parameter(name='sheets.l4_cortex_exc.params.cell.params.tau_syn_inh', lower_bound=3.9, upper_bound=4.5),
-    ]
+    parameters = []
+    for k, v in opt_config['parameters'].items():
+        parameters.append(Parameter(name=k, lower_bound=v[0], upper_bound=v[1]))
 
     return parameters
 
 
-def define_fitness_calculator():
-    objectives = define_objectives()
-    return FitnessCalculator(objectives)
+def define_fitness_calculator(opt_config):
+    targets = define_targets(opt_config)
+    return FitnessCalculator(targets)
 
 
-def define_evaluator(run_script, parameters_url, timeout):
+def define_evaluator(run_script, parameters_url, timeout, config_optimisation):
+
+    with open(config_optimisation) as f:
+        opt_config = json.load(f)
 
     simulator_name = "nest"
 
@@ -240,7 +219,7 @@ def define_evaluator(run_script, parameters_url, timeout):
         path_to_mozaik_env='[PATH_TO_ENV]'
     )
 
-    params = define_parameters()
-    fitness_calculator = define_fitness_calculator()
+    params = define_parameters(opt_config)
+    fitness_calculator = define_fitness_calculator(opt_config)
 
     return Evaluator(fitness_calculator, params, run_script, simulator_name, parameters_url, backend, pynn_seed=1, timeout=timeout)
