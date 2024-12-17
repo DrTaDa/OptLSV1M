@@ -37,13 +37,61 @@ class TargetValue():
         return threshold_score
 
 
+class OneBoundUpperTarget(TargetValue):
+    def calculate_score(self, data_store):
+        if data_store is None:
+            return self.max_score
+        value = self.calculate_value(data_store)
+        if value is None or numpy.isnan(value):
+            score = self.max_score
+        elif self.norm is not None:
+            if value < self.target_value:
+                score = abs(self.target_value - value) / self.norm
+            else:
+                score = 0.
+        else:
+            if value < self.target_value:
+                score = abs(self.target_value - value)
+            else:
+                score = 0.
+        threshold_score = min(score, self.max_score)
+        if numpy.isnan(threshold_score):
+            threshold_score = self.max_score
+        print("For feature {}, for value {:.4f} computed score {:.2f}".format(self.name, value, threshold_score))
+        return threshold_score
+
+
+class OneBoundLowerTarget(TargetValue):
+    def calculate_score(self, data_store):
+        if data_store is None:
+            return self.max_score
+        value = self.calculate_value(data_store)
+        if value is None or numpy.isnan(value):
+            score = self.max_score
+        elif self.norm is not None:
+            if value > self.target_value:
+                score = abs(self.target_value - value) / self.norm
+            else:
+                score = 0.
+        else:
+            if value > self.target_value:
+                score = abs(self.target_value - value)
+            else:
+                score = 0.
+        threshold_score = min(score, self.max_score)
+        if numpy.isnan(threshold_score):
+            threshold_score = self.max_score
+        print("For feature {}, for value {:.4f} computed score {:.2f}".format(self.name, value, threshold_score))
+        return threshold_score
+
+
 class SpontActivityTarget(TargetValue):
     def calculate_value(self, data_store):
         spiketrains = param_filter_query(data_store, sheet_name=self.sheet_name, st_name='InternalStimulus').get_segments()[0].spiketrains
         return 1000 * numpy.mean([float(len(s) / (s.t_stop - s.t_start)) for s in spiketrains])
 
 
-class IrregularityTarget(TargetValue):
+class IrregularityTarget(OneBoundUpperTarget):
     def calculate_value(self, data_store):
         spiketrains = param_filter_query(data_store, sheet_name=self.sheet_name, st_name='InternalStimulus').get_segments()[0].spiketrains
         isis = [numpy.diff(st.magnitude) for st in spiketrains]
@@ -69,7 +117,7 @@ class SynchronyTarget(TargetValue):
         return value
 
 
-class OrientationTuningPreferenceTarget(TargetValue):
+class OrientationTuningPreferenceTarget(OneBoundUpperTarget):
     def calculate_value(self, data_store):
         gc.collect()
         # Choose the O to consider
@@ -162,6 +210,44 @@ class OrientationTuningOrthoLowTarget(TargetValue):
         return numpy.abs(spont_rate - spike_rate_ortho_low) / spont_rate
 
 
+class SizeTuning(TargetValue):
+    def calculate_value(self, data_store):
+        gc.collect()
+
+        # Choose the O to consider
+        target_O = numpy.pi / 2
+
+        # Filter the cell based on what has been recorded and the target orientation
+        seg = param_filter_query(data_store, sheet_name=self.sheet_name, st_name='InternalStimulus').get_segments()[0]
+        orientations_cells = get_orientation_preference(data_store, self.sheet_name).values
+        idxs = data_store.get_sheet_indexes(self.sheet_name, seg.get_stored_spike_train_ids())
+        idx_cells = [idx for idx in idxs if isclose(target_O, orientations_cells[idx], abs_tol=0.1)]
+
+        # Get the firing rates for the full field gratings at high contrast
+        segments = param_filter_query(
+            data_store, st_name='FullfieldDriftingSinusoidalGrating', sheet_name=self.sheet_name, st_contrast=[100]
+        ).get_segments()
+        for seg in segments:
+            orientation = get_annotation(seg, "orientation")
+            if isclose(orientation, target_O, abs_tol=0.1):
+                full_field_rate = get_mean_rate(seg.spiketrains, idx_cells)
+                break
+
+        # Get the firing rates for the small grating disk at high contrast
+        segments = param_filter_query(
+            data_store, st_name='DriftingSinusoidalGratingDisk', sheet_name=self.sheet_name, st_contrast=[100]
+        ).get_segments()
+        for seg in segments:
+            orientation = get_annotation(seg, "orientation")
+            if isclose(orientation, target_O, abs_tol=0.1):
+                small_disk_rate = get_mean_rate(seg.spiketrains, idx_cells)
+                break
+
+        gc.collect()
+
+        return small_disk_rate / full_field_rate
+
+    
 class ICMSTarget():
 
     def __init__(self, name, target_values, value_distances, sheet_names, active_electrode, stimulation_frequency, amplitude, norms=None, max_score=10):
