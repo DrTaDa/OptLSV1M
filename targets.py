@@ -87,13 +87,23 @@ class OneBoundLowerTarget(TargetValue):
 
 class SpontActivityTarget(TargetValue):
     def calculate_value(self, data_store):
-        spiketrains = param_filter_query(data_store, sheet_name=self.sheet_name, st_name='InternalStimulus').get_segments()[0].spiketrains
+
+        segments = param_filter_query(data_store, sheet_name=self.sheet_name, st_name='InternalStimulus').get_segments()
+        if not len(segments):
+            return None
+
+        spiketrains = segments[0].spiketrains
         return 1000 * numpy.mean([float(len(s) / (s.t_stop - s.t_start)) for s in spiketrains])
 
 
 class IrregularityTarget(OneBoundUpperTarget):
     def calculate_value(self, data_store):
-        spiketrains = param_filter_query(data_store, sheet_name=self.sheet_name, st_name='InternalStimulus').get_segments()[0].spiketrains
+        
+        segments = param_filter_query(data_store, sheet_name=self.sheet_name, st_name='InternalStimulus').get_segments()
+        if not len(segments):
+            return None
+
+        spiketrains = segments[0].spiketrains
         isis = [numpy.diff(st.magnitude) for st in spiketrains]
         idxs = numpy.array([len(isi) for isi in isis]) > 5
         value = numpy.mean(numpy.array([numpy.std(isi) / numpy.mean(isi) for isi in isis])[idxs])
@@ -103,7 +113,12 @@ class IrregularityTarget(OneBoundUpperTarget):
 class SynchronyTarget(TargetValue):
     def calculate_value(self, data_store):
         gc.collect()
-        spiketrains = param_filter_query(data_store, sheet_name=self.sheet_name, st_name='InternalStimulus').get_segments()[0].spiketrains[:2000]
+
+        segments = param_filter_query(data_store, sheet_name=self.sheet_name, st_name='InternalStimulus').get_segments()
+        if not len(segments):
+            return None
+
+        spiketrains = segments[0].spiketrains[:2000]
         isis = [numpy.diff(st.magnitude) for st in spiketrains]
         idxs = numpy.array([len(isi) for isi in isis]) > 5
         t_start = round(spiketrains[0].t_start, 5)
@@ -111,9 +126,12 @@ class SynchronyTarget(TargetValue):
         num_bins = int(round((t_stop - t_start) / 10.))
         r = (float(t_start), float(t_stop))
         psths = [numpy.histogram(x, bins=num_bins, range=r)[0] for x in spiketrains]
+
         corrs = numpy.nan_to_num(numpy.corrcoef(numpy.squeeze(psths)))
         value = numpy.mean(corrs[idxs, :][:, idxs][numpy.triu_indices(sum(idxs == True), 1)])
+
         gc.collect()
+
         return value
 
 
@@ -125,7 +143,11 @@ class OrientationTuningPreferenceTarget(OneBoundUpperTarget):
         orthogonal_O = target_O - (numpy.pi / 2)
 
         # Filter the cell based on what has been recorded and the target orientation
-        seg = param_filter_query(data_store, sheet_name=self.sheet_name, st_name='InternalStimulus').get_segments()[0]
+        segments = param_filter_query(data_store, sheet_name=self.sheet_name, st_name='InternalStimulus').get_segments()
+        if not len(segments):
+            return None
+
+        seg = segments[0]
         orientations_cells = get_orientation_preference(data_store, self.sheet_name).values
         idxs = data_store.get_sheet_indexes(self.sheet_name, seg.get_stored_spike_train_ids())
         idx_cells = [idx for idx in idxs if isclose(target_O, orientations_cells[idx], abs_tol=0.1)]
@@ -134,8 +156,11 @@ class OrientationTuningPreferenceTarget(OneBoundUpperTarget):
         orientations_cells = get_orientation_preference(data_store, self.sheet_name).values
         idx_cells = [idx for idx, oc in enumerate(orientations_cells) if isclose(target_O, oc, abs_tol=0.1)]
 
-        # Get the rates for the O and the orthogonal O
+        # Get the rates for the O and the orthogonal
         segments = param_filter_query(data_store, st_name='FullfieldDriftingSinusoidalGrating', sheet_name=self.sheet_name, st_contrast=[100]).get_segments()
+        if not len(segments):
+            return None
+
         for seg in segments:
             orientation = get_annotation(seg, "orientation")
             if isclose(orientation, target_O, abs_tol=0.1):
@@ -157,17 +182,21 @@ class OrientationTuningOrthoHighTarget(TargetValue):
         orthogonal_O = target_O - (numpy.pi / 2)
 
         # Filter the cell based on what has been recorded and the target orientation
-        seg = param_filter_query(data_store, sheet_name=self.sheet_name, st_name='InternalStimulus').get_segments()[0]
+        segments = param_filter_query(data_store, sheet_name=self.sheet_name, st_name='InternalStimulus').get_segments()
+        if not len(segments):
+            return None
+        seg = segments[0]
         orientations_cells = get_orientation_preference(data_store, self.sheet_name).values
         idxs = data_store.get_sheet_indexes(self.sheet_name, seg.get_stored_spike_train_ids())
         idx_cells = [idx for idx in idxs if isclose(target_O, orientations_cells[idx], abs_tol=0.1)]
 
         # Get the spontaneous rate
-        seg = param_filter_query(data_store, sheet_name=self.sheet_name, st_name='InternalStimulus').get_segments()[0]
         spont_rate = get_mean_rate(seg.spiketrains, idx_cells)
 
         # Get the rates for the O and the orthogonal O high contrast
         segments = param_filter_query(data_store, st_name='FullfieldDriftingSinusoidalGrating', sheet_name=self.sheet_name, st_contrast=[100]).get_segments()
+        if not len(segments):
+            return None
         for seg in segments:
             orientation = get_annotation(seg, "orientation")
             if isclose(orientation, orthogonal_O, abs_tol=0.1):
@@ -188,17 +217,25 @@ class OrientationTuningOrthoLowTarget(TargetValue):
         orthogonal_O = target_O - (numpy.pi / 2)
         
         # Filter the cell based on what has been recorded and the target orientation
-        seg = param_filter_query(data_store, sheet_name=self.sheet_name, st_name='InternalStimulus').get_segments()[0]
+        segments = param_filter_query(data_store, sheet_name=self.sheet_name, st_name='InternalStimulus').get_segments()
+        if not len(segments):
+            return None
+        seg = segments[0]
         orientations_cells = get_orientation_preference(data_store, self.sheet_name).values
         idxs = data_store.get_sheet_indexes(self.sheet_name, seg.get_stored_spike_train_ids())
         idx_cells = [idx for idx in idxs if isclose(target_O, orientations_cells[idx], abs_tol=0.1)]
 
         # Get the spontaneous rate
-        seg = param_filter_query(data_store, sheet_name=self.sheet_name, st_name='InternalStimulus').get_segments()[0]
+        segments = param_filter_query(data_store, sheet_name=self.sheet_name, st_name='InternalStimulus').get_segments()
+        if not len(segments):
+            return None
+        seg = segments[0]
         spont_rate = get_mean_rate(seg.spiketrains, idx_cells)
 
         # Get the rates for the orthogonal O low contrast
         segments = param_filter_query(data_store, st_name='FullfieldDriftingSinusoidalGrating', sheet_name=self.sheet_name, st_contrast=[10]).get_segments()
+        if not len(segments):
+            return None
         for seg in segments:
             orientation = get_annotation(seg, "orientation")
             if isclose(orientation, orthogonal_O, abs_tol=0.1):
@@ -218,7 +255,10 @@ class SizeTuning(TargetValue):
         target_O = numpy.pi / 2
 
         # Filter the cell based on what has been recorded and the target orientation
-        seg = param_filter_query(data_store, sheet_name=self.sheet_name, st_name='InternalStimulus').get_segments()[0]
+        segments = param_filter_query(data_store, sheet_name=self.sheet_name, st_name='InternalStimulus').get_segments()
+        if not len(segments):
+            return None
+        seg = segments[0]
         orientations_cells = get_orientation_preference(data_store, self.sheet_name).values
         idxs = data_store.get_sheet_indexes(self.sheet_name, seg.get_stored_spike_train_ids())
         idx_cells = [idx for idx in idxs if isclose(target_O, orientations_cells[idx], abs_tol=0.1)]
@@ -227,6 +267,8 @@ class SizeTuning(TargetValue):
         segments = param_filter_query(
             data_store, st_name='FullfieldDriftingSinusoidalGrating', sheet_name=self.sheet_name, st_contrast=[100]
         ).get_segments()
+        if not len(segments):
+            return None
         for seg in segments:
             orientation = get_annotation(seg, "orientation")
             if isclose(orientation, target_O, abs_tol=0.1):
@@ -237,6 +279,8 @@ class SizeTuning(TargetValue):
         segments = param_filter_query(
             data_store, st_name='DriftingSinusoidalGratingDisk', sheet_name=self.sheet_name, st_contrast=[100]
         ).get_segments()
+        if not len(segments):
+            return None
         for seg in segments:
             orientation = get_annotation(seg, "orientation")
             if isclose(orientation, target_O, abs_tol=0.1):
