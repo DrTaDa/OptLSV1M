@@ -1,0 +1,6 @@
+{'parameters': {}, 'file_name': 'Fig4_20241205-020912_.png', 'class_name': "<class 'visualization_functions.SpontStatisticsOverview'>"}
+{'parameters': {'exc_sheet_name1': 'V1_Exc_L4', 'inh_sheet_name1': 'V1_Inh_L4', 'exc_sheet_name2': 'V1_Exc_L2/3', 'inh_sheet_name2': 'V1_Inh_L2/3'}, 'file_name': 'Fig6_20241205-020522.png', 'class_name': "<class 'visualization_functions.OrientationTuningSummaryFiringRates'>"}
+{'parameters': {}, 'file_name': 'Fig4_20250109-164446_.png', 'class_name': "<class 'visualization_functions.SpontStatisticsOverview'>"}
+{'parameters': {}, 'file_name': 'Fig4_20250109-164446_.png', 'class_name': "<class 'visualization_functions.SpontStatisticsOverview'>"}
+{'parameters': {}, 'file_name': 'Fig4_20250109-164446_.png', 'class_name': "<class 'visualization_functions.SpontStatisticsOverview'>"}
+{'parameters': {}, 'file_name': 'Fig4_20250109-164446_.png', 'class_name': "<class 'visualization_functions.SpontStatisticsOverview'>"}

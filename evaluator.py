@@ -80,7 +80,7 @@ class SlurmSequentialBackend():
             'source ' + str(self.path_to_mozaik_env),
             'cd ' + os.getcwd(),
             ' '.join(
-                ["srun --mpi=pmix_v3 python", run_script, simulator_name, str(self.num_threads), parameters_url] + \
+                ["srun --mpi=pmix_v5 python", run_script, simulator_name, str(self.num_threads), parameters_url] + \
                 modified_parameters + [simulation_run_name] + ['>'] + [parameters['results_dir'][1:-1] + '/OUTFILE' + str(time.time())]
             ),
         ])
@@ -146,8 +146,8 @@ class Evaluator(ParameterSearch):
         t1 = time.time()
         while not self.check_evaluation_finished(slurm_id):
             time.sleep(20)
-            if (t1 - time.time()) > self.timeout:
-                return sum([obj.max_score for obj in self.objectives])
+            #if (t1 - time.time()) > self.timeout:
+            #    return sum([obj.max_score for obj in self.objectives])
         print(f"On pid {pid}. Slurm job finished.")
 
         # Load data store
@@ -215,7 +215,7 @@ def define_evaluator(run_script, parameters_url, timeout, config_optimisation):
     backend = SlurmSequentialBackend(
         num_threads=1,
         num_mpi=16,
-        slurm_options=['--hint=nomultithread', '-N 1-1', '--exclude=w1,w2,w3,w4,w5,w6,w7,w8,w10'],
+        slurm_options=['--hint=nomultithread', '-N 1-1', '--exclude=w1,w2,w3,w4,w5,w6,w7,w8,w10,w14'],
         path_to_mozaik_env='[PATH_TO_ENV]'
     )
 

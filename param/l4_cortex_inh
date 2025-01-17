@@ -41,14 +41,12 @@
         
     'L4InhL4ExcConnection': {
         'target_synapses' : 'inhibitory',               
-
         'short_term_plasticity': {
-		            'U': 0.75, 
-		            'tau_rec': 70, 
-		            'tau_psc': 3.0,
-		            'tau_fac': 0.0,
-                        },
- 
+              'U': ref('sheets.l4_cortex_exc.L4ExcL4ExcConnection.short_term_plasticity.U'),
+              'tau_rec': 70,
+              'tau_psc': ref('sheets.l4_cortex_exc.params.cell.params.tau_syn_inh'),
+              'tau_fac': ref('sheets.l4_cortex_exc.L4ExcL4ExcConnection.short_term_plasticity.tau_fac'),
+        },
         'weight_functions' : {  
                                 'f1' : {
                                          'component' : 'mozaik.connectors.vision.V1CorrelationBasedConnectivity',
@@ -89,7 +87,12 @@
     },
     'L4InhL4InhConnection':  {
         'target_synapses' : 'inhibitory',               
-        'short_term_plasticity': ref('sheets.l4_cortex_inh.L4InhL4ExcConnection.short_term_plasticity'),
+         'short_term_plasticity': {
+              'U': ref('sheets.l4_cortex_inh.L4InhL4ExcConnection.short_term_plasticity.U'),
+              'tau_rec': ref('sheets.l4_cortex_inh.L4InhL4ExcConnection.short_term_plasticity.tau_rec'),
+              'tau_psc': ref('sheets.l4_cortex_inh.params.cell.params.tau_syn_inh'),
+              'tau_fac': ref('sheets.l4_cortex_inh.L4InhL4ExcConnection.short_term_plasticity.tau_fac'),
+        },
         'weight_functions' : {  
                                 'f1' : {
                                          'component' : 'mozaik.connectors.vision.V1CorrelationBasedConnectivity',
@@ -159,7 +162,12 @@
                      'high': ref('sheets.l4_cortex_inh.AfferentMean') + ref('sheets.l4_cortex_inh.AfferentVar'),
                  },
          },
-        'short_term_plasticity':  ref('sheets.l4_cortex_exc.AfferentConnection.short_term_plasticity'),
+        'short_term_plasticity': {
+             'U': ref('sheets.l4_cortex_exc.AfferentConnection.short_term_plasticity.U'),
+             'tau_rec': ref('sheets.l4_cortex_exc.AfferentConnection.short_term_plasticity.tau_rec'),
+             'tau_psc': ref('sheets.l4_cortex_inh.params.cell.params.tau_syn_exc'),
+             'tau_fac': ref('sheets.l4_cortex_exc.AfferentConnection.short_term_plasticity.tau_fac'),
+         },
         'local_module': None,
     }
 }

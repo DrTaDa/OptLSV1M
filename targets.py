@@ -33,7 +33,10 @@ class TargetValue():
         threshold_score = min(score, self.max_score)
         if numpy.isnan(threshold_score):
             threshold_score = self.max_score
-        print("For feature {}, for value {:.4f} computed score {:.2f}".format(self.name, value, threshold_score))
+        if value is None:
+            print("For feature {}, value is None, score set to {:.2f}".format(self.name, threshold_score))
+        else:
+            print("For feature {}, for value {:.4f} computed score {:.2f}".format(self.name, value, threshold_score))
         return threshold_score
 
 
@@ -272,7 +275,7 @@ class SizeTuning(TargetValue):
         for seg in segments:
             orientation = get_annotation(seg, "orientation")
             if isclose(orientation, target_O, abs_tol=0.1):
-                full_field_rate = get_mean_rate(seg.spiketrains, idx_cells)
+                full_field_rates = [len(seg.spiketrains[idx]) for idx in idx_cells]
                 break
 
         # Get the firing rates for the small grating disk at high contrast
@@ -284,12 +287,19 @@ class SizeTuning(TargetValue):
         for seg in segments:
             orientation = get_annotation(seg, "orientation")
             if isclose(orientation, target_O, abs_tol=0.1):
-                small_disk_rate = get_mean_rate(seg.spiketrains, idx_cells)
+                small_disk_rates = [len(seg.spiketrains[idx]) for idx in idx_cells]
                 break
 
         gc.collect()
 
-        return small_disk_rate / full_field_rate
+        suppression_index = []
+        for small_rate, full_rate in zip(small_disk_rates, full_field_rates):
+            if small_disk_rates > 2.:
+                _suppression = small_disk_rates / full_field_rates
+                if _suppression > 1.0:
+                    suppression_index.append(_suppression)
+
+        return numpy.nanmean(suppression_index)
 
     
 class ICMSTarget():

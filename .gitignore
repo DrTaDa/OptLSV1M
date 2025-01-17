@@ -160,3 +160,5 @@ cython_debug/
 .DS_Store
 *.log
 202*_Optimization
+202*/
+pickled_datastore/

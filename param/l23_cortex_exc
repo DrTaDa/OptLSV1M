@@ -42,7 +42,12 @@
     'K' : 2300, # Number of synapses per neuron
     'L23ExcL23ExcConnection': {
         'target_synapses' : 'excitatory',             
-        'short_term_plasticity': ref('sheets.l4_cortex_exc.L4ExcL4ExcConnection.short_term_plasticity'),                                          
+         'short_term_plasticity': {
+             'U': ref('sheets.l4_cortex_exc.L4ExcL4ExcConnection.short_term_plasticity.U'),
+             'tau_rec': ref('sheets.l4_cortex_exc.L4ExcL4ExcConnection.short_term_plasticity.tau_rec'),
+             'tau_psc': ref('sheets.l23_cortex_exc.params.cell.params.tau_syn_exc'),
+             'tau_fac': ref('sheets.l4_cortex_exc.L4ExcL4ExcConnection.short_term_plasticity.tau_fac'),
+         },                                 
         'weight_functions' : {  'f1' : {
                                          'component' : 'mozaik.connectors.vision.MapDependentModularConnectorFunction',
                                          'params' : {
@@ -82,8 +87,13 @@
 
     'L23ExcL23InhConnection': {
         'target_synapses' : 'excitatory',             
-        'short_term_plasticity': ref('sheets.l4_cortex_exc.L4ExcL4InhConnection.short_term_plasticity'),                                            
-	'weight_functions' : ref('sheets.l23_cortex_exc.L23ExcL23ExcConnection.weight_functions'),  
+         'short_term_plasticity': {
+             'U': ref('sheets.l4_cortex_exc.L4ExcL4InhConnection.short_term_plasticity.U'),
+             'tau_rec': ref('sheets.l4_cortex_exc.L4ExcL4InhConnection.short_term_plasticity.tau_rec'),
+             'tau_psc': ref('sheets.l23_cortex_inh.params.cell.params.tau_syn_exc'),
+             'tau_fac': ref('sheets.l4_cortex_exc.L4ExcL4InhConnection.short_term_plasticity.tau_fac'),
+         },
+    	'weight_functions' : ref('sheets.l23_cortex_exc.L23ExcL23ExcConnection.weight_functions'),  
         'weight_functions' : {  'f1' : {
                                          'component' : 'mozaik.connectors.vision.MapDependentModularConnectorFunction',
                                          'params' : {
@@ -117,16 +127,14 @@
 	'num_samples' : ref('sheets.l23_cortex_exc.L23ExcL23ExcConnection.num_samples') * ref('sheets.l4_cortex_exc.inhibitory_connection_ratio'),
         'local_module': None,
     },
-
-
     'L4ExcL23ExcConnection': {
         'target_synapses' : 'excitatory',             
-        'short_term_plasticity': {
-                            'U': 0.75,
-                            'tau_rec': 30,
-                            'tau_psc': 3.0,
-                            'tau_fac': 0.0,
-                        },
+         'short_term_plasticity': {
+             'U': ref('sheets.l4_cortex_exc.L4ExcL4ExcConnection.short_term_plasticity.U'),
+             'tau_rec': ref('sheets.l4_cortex_exc.L4ExcL4ExcConnection.short_term_plasticity.tau_rec'),
+             'tau_psc': ref('sheets.l23_cortex_exc.params.cell.params.tau_syn_exc'),
+             'tau_fac': ref('sheets.l4_cortex_exc.L4ExcL4ExcConnection.short_term_plasticity.tau_fac'),
+        },
         'weight_functions' : {  'f1' : {
                                          'component' : 'mozaik.connectors.modular_connector_functions.HyperbolicModularConnectorFunction',
                                          'params' : {
@@ -166,12 +174,11 @@
     'L23ExcL4ExcConnection': {
         'target_synapses' : 'excitatory',             
         'short_term_plasticity': {
-                                        'U': 0.75,
-                                        'tau_rec': 20,
-                                        'tau_psc': 3.0,
-                                        'tau_fac': 0.0,
+            'U': ref('sheets.l4_cortex_exc.L4ExcL4ExcConnection.short_term_plasticity.U'),
+            'tau_rec': ref('sheets.l4_cortex_exc.L4ExcL4ExcConnection.short_term_plasticity.tau_rec'),
+            'tau_psc': ref('sheets.l4_cortex_exc.params.cell.params.tau_syn_exc'),
+            'tau_fac': ref('sheets.l4_cortex_exc.L4ExcL4ExcConnection.short_term_plasticity.tau_fac'),
         },
-
         'weight_functions' : {  'f1' : {
                                          'component' : 'mozaik.connectors.modular_connector_functions.GaussianDecayModularConnectorFunction',
                                          'params' : {
@@ -179,7 +186,6 @@
                                                             'arborization_scaler': 1.0,
                                                     }
                                        },                                        
-
 				'f2' : {
                                          'component' : 'mozaik.connectors.vision.MapDependentModularConnectorFunction',
                                          'params' : {
@@ -189,7 +195,6 @@
                                                         'periodic' : True,
                                                     }
                                        }, 
-
                              },
         'delay_functions' : {
                                 'd1' : {
@@ -211,7 +216,12 @@
 
     'L23ExcL4InhConnection': {
         'target_synapses' : 'excitatory',             
-        'short_term_plasticity': ref('sheets.l23_cortex_exc.L23ExcL4ExcConnection.short_term_plasticity'), 
+        'short_term_plasticity': {
+            'U': ref('sheets.l23_cortex_exc.L23ExcL4ExcConnection.short_term_plasticity.U'),
+            'tau_rec': ref('sheets.l23_cortex_exc.L23ExcL4ExcConnection.short_term_plasticity.tau_rec'),
+            'tau_psc': ref('sheets.l4_cortex_inh.params.cell.params.tau_syn_exc'),
+            'tau_fac': ref('sheets.l23_cortex_exc.L23ExcL4ExcConnection.short_term_plasticity.tau_fac'),
+        },
         'weight_functions' : {  'f1' : {
                                          'component' : 'mozaik.connectors.modular_connector_functions.GaussianDecayModularConnectorFunction',
                                          'params' : {

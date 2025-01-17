@@ -40,7 +40,7 @@ class MeasureSizeTuningOneSize(VisualExperiment):
                                 location_x=x,
                                 location_y=y,
                                 background_luminance=self.background_luminance,
-                                contrast = c,
+                                contrast=c,
                                 duration=self.parameters.grating_duration,
                                 density=self.density,
                                 trial=k,
@@ -70,7 +70,7 @@ def create_experiments(model):
 
     size_tuning = MeasureSizeTuningOneSize(model, ParameterSet(
     {
-        'size': 2.5,
+        'size': 1.25,
         'orientations': [numpy.pi / 2.],
         'positions': [(0,0)],
         'spatial_frequency': 0.8,
