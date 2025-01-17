@@ -132,10 +132,7 @@ def get_data_stores(run_id):
 
 
 def get_annotation(segment, key):
-    try:
-        return ast.literal_eval(segment.annotations['stimulus'])[key]
-    except:
-        return None
+    return eval(segment.annotations['stimulus'])[key]
 
 
 def get_spiketrains_duration(spiketrains):

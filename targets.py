@@ -294,8 +294,8 @@ class SizeTuning(TargetValue):
 
         suppression_index = []
         for small_rate, full_rate in zip(small_disk_rates, full_field_rates):
-            if small_disk_rates > 2.:
-                _suppression = small_disk_rates / full_field_rates
+            if small_rate > 2.:
+                _suppression = small_rate / full_rate
                 if _suppression > 1.0:
                     suppression_index.append(_suppression)
 
