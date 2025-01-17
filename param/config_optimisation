@@ -50,6 +50,6 @@
         {"class": "OrientationTuningOrthoLowTarget", "target_value": 0, "sheet_name": "V1_Inh_L4", "norm": 0.3, "max_score": 20},
         {"class": "OrientationTuningOrthoLowTarget", "target_value": 0, "sheet_name": "V1_Exc_L2/3", "norm": 0.3, "max_score": 20},
         {"class": "OrientationTuningOrthoLowTarget", "target_value": 0, "sheet_name": "V1_Inh_L2/3", "norm": 0.3, "max_score": 20},
-        {"class": "SizeTuning", "target_value": 0.3, "sheet_name": "V1_Exc_L2/3", "norm": 0.03, "max_score": 20}
+        {"class": "SizeTuning", "target_value": 0.2, "sheet_name": "V1_Exc_L2/3", "norm": 0.02, "max_score": 20}
     ]
 }
