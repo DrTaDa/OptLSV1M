@@ -252,6 +252,8 @@ class OrientationTuningOrthoLowTarget(TargetValue):
 
 class SizeTuning(TargetValue):
     def calculate_value(self, data_store):
+        """Compute the percentage of cells that show a suppression above +20%"""
+
         gc.collect()
 
         # Choose the O to consider
@@ -296,10 +298,10 @@ class SizeTuning(TargetValue):
         for small_rate, full_rate in zip(small_disk_rates, full_field_rates):
             if small_rate > 2.:
                 _suppression = small_rate / full_rate
-                if _suppression > 1.0:
+                if _suppression > 1.1:
                     suppression_index.append(_suppression)
 
-        return numpy.nanmean(suppression_index)
+        return len(suppression_index) / len(idx_cells)
 
     
 class ICMSTarget():
