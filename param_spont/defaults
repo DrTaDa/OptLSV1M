@@ -27,6 +27,7 @@
     'time_step' : 0.1,
     'pynn_seed' : 5,
     'mpi_seed' : 1023,
+    'store_connections' : False,
     'l23' : True,
     'trial' : 0,
     'explosion_monitoring': {

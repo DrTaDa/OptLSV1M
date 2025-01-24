@@ -26,10 +26,10 @@
         "sheets.l4_cortex_exc.AfferentConnection.short_term_plasticity.tau_rec": [10.0, 150.0]
     },
     "targets": [
-        {"class": "SpontActivityTarget", "target_value": 1.4, "sheet_name": "V1_Exc_L4", "norm": 0.2, "max_score": 20},
-        {"class": "SpontActivityTarget", "target_value": 7.6, "sheet_name": "V1_Inh_L4", "norm": 0.4, "max_score": 20},
-        {"class": "SpontActivityTarget", "target_value": 2, "sheet_name": "V1_Exc_L2/3", "norm": 0.2, "max_score": 20},
-        {"class": "SpontActivityTarget", "target_value": 4.7, "sheet_name": "V1_Inh_L2/3", "norm": 0.4, "max_score": 20},
+        {"class": "SpontActivityTarget", "target_value": [1.2, 2.0], "sheet_name": "V1_Exc_L4", "norm": 0.2, "max_score": 20},
+        {"class": "SpontActivityTarget", "target_value": [7.0, 8.5], "sheet_name": "V1_Inh_L4", "norm": 0.2, "max_score": 20},
+        {"class": "SpontActivityTarget", "target_value": [2.0, 3.0], "sheet_name": "V1_Exc_L2/3", "norm": 0.2, "max_score": 20},
+        {"class": "SpontActivityTarget", "target_value": [4.0, 7.5], "sheet_name": "V1_Inh_L2/3", "norm": 0.2, "max_score": 20},
         {"class": "IrregularityTarget", "target_value": 1, "sheet_name": "V1_Exc_L4", "norm": 0.1, "max_score": 20},
         {"class": "IrregularityTarget", "target_value": 1, "sheet_name": "V1_Inh_L4", "norm": 0.1, "max_score": 20},
         {"class": "IrregularityTarget", "target_value": 1, "sheet_name": "V1_Exc_L2/3", "norm": 0.1, "max_score": 20},

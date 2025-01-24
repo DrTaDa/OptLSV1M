@@ -88,7 +88,47 @@ class OneBoundLowerTarget(TargetValue):
         return threshold_score
 
 
-class SpontActivityTarget(TargetValue):
+class RangeTarget():
+    
+    def __init__(self, name, target_value, sheet_name=None, norm=None, max_score=10):
+        self.name  = name
+        self.target_value = target_value
+        self.norm = norm
+        self.max_score = max_score
+        self.sheet_name = sheet_name
+        assert self.norm != 0
+
+    def calculate_value(self, data_store):
+        raise NotImplementedError
+
+    def calculate_score(self, data_store):
+        if data_store is None:
+            return self.max_score
+        value = self.calculate_value(data_store)
+        if value is None or numpy.isnan(value):
+            score = self.max_score
+        elif self.norm is not None:
+            if self.target_value[0] < value < self.target_value[1]:
+                score = 0
+            else:
+                low = abs(self.target_value[0] - value) / self.norm
+                high = abs(self.target_value[1] - value) / self.norm
+                score = numpy.min([low, high])
+        else:
+            low = abs(self.target_value[0] - value)
+            high = abs(self.target_value[1] - value)
+            score = numpy.min([low, high])
+        threshold_score = min(score, self.max_score)
+        if numpy.isnan(threshold_score):
+            threshold_score = self.max_score
+        if value is None:
+            print("For feature {}, value is None, score set to {:.2f}".format(self.name, threshold_score))
+        else:
+            print("For feature {}, for value {:.4f} computed score {:.2f}".format(self.name, value, threshold_score))
+        return threshold_score
+
+
+class SpontActivityTarget(RangeTarget):
     def calculate_value(self, data_store):
 
         segments = param_filter_query(data_store, sheet_name=self.sheet_name, st_name='InternalStimulus').get_segments()

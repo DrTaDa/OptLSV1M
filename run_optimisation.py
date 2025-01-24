@@ -4,7 +4,7 @@ from evaluator import define_evaluator
 
 offspring_size = 12                 # Size of the population used by the optimizer
 timeout = 4000                      # Hard cut-off for the evaluation of an individual (in seconds)
-optimiser_seed = 2                  # random seed for the optimiser
+optimiser_seed = 3                  # random seed for the optimiser
 optimiser_sigma = 0.3               # width of the search at the first generation of the optimisation, default: 0.4
 optimiser_centroid = [0.00013271, 0.00028332, 0.00114099, 0.00123946, 0.00132614, 0.00145843, 6.31e-05, 0.000158, 0.00177875, 0.00030436, 0.00021774, 0.00304404, 0.00075802, 0.00090406, 106.93095163, 4.02107783, 47.7803816, 97.30448993, 4.77814342, 47.97863771, 0.92729631, 24.45879866, 33.30082499, 65.52261412]           # List (optional): starting solution
 max_ngen = 200                      # Maximum number of generation of the optimiser
