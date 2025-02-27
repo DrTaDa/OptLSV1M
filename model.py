@@ -74,7 +74,6 @@ class SelfSustainedPushPull(Model):
                                                   cortex_inh_l4, self.parameters.sheets.l4_cortex_inh.L4InhL4InhConnection).connect()
 
             if self.parameters.l23:
-
                 # initialize afferent layer 4 to layer 2/3 projection
                 ModularSamplingProbabilisticConnector(self, 'V1L4ExcL23ExcConnection', cortex_exc_l4,
                                                       cortex_exc_l23, self.parameters.sheets.l23_cortex_exc.L4ExcL23ExcConnection).connect()
@@ -83,12 +82,16 @@ class SelfSustainedPushPull(Model):
 
                 ModularSamplingProbabilisticConnector(self, 'V1L23ExcL23ExcConnection', cortex_exc_l23,
                                                       cortex_exc_l23, self.parameters.sheets.l23_cortex_exc.L23ExcL23ExcConnection).connect()
+                ModularSamplingProbabilisticConnector(self, 'V1L23ExcL23ExcConnection_biais', cortex_exc_l23,
+                                                      cortex_exc_l23, self.parameters.sheets.l23_cortex_exc.L23ExcL23ExcConnection_biais).connect()
+
                 ModularSamplingProbabilisticConnector(self, 'V1L23ExcL23InhConnection', cortex_exc_l23,
                                                       cortex_inh_l23, self.parameters.sheets.l23_cortex_exc.L23ExcL23InhConnection).connect()
                 ModularSamplingProbabilisticConnector(self, 'V1L23InhL23ExcConnection', cortex_inh_l23,
                                                       cortex_exc_l23, self.parameters.sheets.l23_cortex_inh.L23InhL23ExcConnection).connect()
                 ModularSamplingProbabilisticConnector(self, 'V1L23InhL23InhConnection', cortex_inh_l23,
                                                       cortex_inh_l23, self.parameters.sheets.l23_cortex_inh.L23InhL23InhConnection).connect()
+
                 if self.parameters.feedback:
                     ModularSamplingProbabilisticConnector(self, 'V1L23ExcL4ExcConnection', cortex_exc_l23,
                                                           cortex_exc_l4, self.parameters.sheets.l23_cortex_exc.L23ExcL4ExcConnection).connect()

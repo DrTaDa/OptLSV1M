@@ -159,7 +159,7 @@ class Evaluator(ParameterSearch):
         score = self.evaluate_data_store(data_store)
         print(f"On pid {pid}. Done computing scores.")
 
-        shutil.rmtree(subf) 
+        #shutil.rmtree(subf)
 
         print(f"On pid {pid}. Scores = {score}")
         return score
@@ -215,7 +215,7 @@ def define_evaluator(run_script, parameters_url, timeout, config_optimisation):
     backend = SlurmSequentialBackend(
         num_threads=1,
         num_mpi=16,
-        slurm_options=['--hint=nomultithread', '-N 1-1', '--exclude=w1,w2,w3,w4,w5,w6,w7,w8,w10'],
+        slurm_options=['--hint=nomultithread', '-N 1-1'], #, '--exclude=w1,w2,w3,w4,w5,w6,w7,w8,w10'],
         path_to_mozaik_env='[PATH_TO_ENV]'
     )
 

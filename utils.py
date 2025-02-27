@@ -92,26 +92,6 @@ def get_data_store(path):
     return data_store
 
 
-def get_data_store(path):
-
-    parameters = ParameterSet(
-            {'root_directory': path,
-             'store_stimuli': False}
-    )
-
-    print(f"Reading folder {path}")
-    try:
-        data_store = PickledDataStore(
-                load=True,
-                parameters=parameters,
-                replace=True
-            )
-    except:
-        return None
-
-    return data_store
-
-
 def get_data_stores(run_id):
 
     data_stores = []
@@ -175,21 +155,8 @@ def get_ICMS_position_data(sheet_name, data_store, amplitude=None, frequency=Non
 
 
 def get_orientation_preference(data_store, sheet_name):
-    try:
-        orientations = data_store.get_analysis_result(
-            identifier='PerNeuronValue',
-            value_name=['LGNAfferentOrientation', 'ORMapOrientation'],
-            sheet_name=sheet_name
-        )[0]
-    except:
-        NeuronAnnotationsToPerNeuronValues(data_store, ParameterSet({})).analyse()
-        orientations = data_store.get_analysis_result(
-            identifier='PerNeuronValue',
-            value_name=['LGNAfferentOrientation', 'ORMapOrientation'],
-            sheet_name=sheet_name
-        )[0]
-
-    return orientations
+    anns = data_store.get_neuron_annotations()
+    return numpy.array([anns[sheet_name][n]['LGNAfferentOrientation'] for n in range(len(anns[sheet_name]))])
 
 
 def make_dir(path_dir):

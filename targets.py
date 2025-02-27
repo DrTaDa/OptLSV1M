@@ -155,13 +155,21 @@ class IrregularityTarget(OneBoundUpperTarget):
 
 class SynchronyTarget(TargetValue):
     def calculate_value(self, data_store):
+    
         gc.collect()
-
+        
         segments = param_filter_query(data_store, sheet_name=self.sheet_name, st_name='InternalStimulus').get_segments()
         if not len(segments):
             return None
 
-        spiketrains = segments[0].spiketrains[:2000]
+        spiketrains = segments[0].spiketrains
+
+        x_pos = data_store.get_neuron_positions()[self.sheet_name][0]
+        y_pos = data_store.get_neuron_positions()[self.sheet_name][1]
+
+        spiketrains = [st for idx, st in enumerate(spiketrains) if abs(x_pos[idx]) < 1. and abs(y_pos[idx]) < 1.]
+        spiketrains = spiketrains[:2000]
+
         isis = [numpy.diff(st.magnitude) for st in spiketrains]
         idxs = numpy.array([len(isi) for isi in isis]) > 5
         t_start = round(spiketrains[0].t_start, 5)
@@ -177,7 +185,7 @@ class SynchronyTarget(TargetValue):
 
         return value
 
-
+        
 class OrientationTuningPreferenceTarget(OneBoundUpperTarget):
     def calculate_value(self, data_store):
         gc.collect()
@@ -191,12 +199,12 @@ class OrientationTuningPreferenceTarget(OneBoundUpperTarget):
             return None
 
         seg = segments[0]
-        orientations_cells = get_orientation_preference(data_store, self.sheet_name).values
+        orientations_cells = get_orientation_preference(data_store, self.sheet_name)
         idxs = data_store.get_sheet_indexes(self.sheet_name, seg.get_stored_spike_train_ids())
         idx_cells = [idx for idx in idxs if isclose(target_O, orientations_cells[idx], abs_tol=0.1)]
 
         # Get the id of the neurons that respond to that O
-        orientations_cells = get_orientation_preference(data_store, self.sheet_name).values
+        orientations_cells = get_orientation_preference(data_store, self.sheet_name)
         idx_cells = [idx for idx, oc in enumerate(orientations_cells) if isclose(target_O, oc, abs_tol=0.1)]
 
         # Get the rates for the O and the orthogonal
@@ -229,7 +237,7 @@ class OrientationTuningOrthoHighTarget(TargetValue):
         if not len(segments):
             return None
         seg = segments[0]
-        orientations_cells = get_orientation_preference(data_store, self.sheet_name).values
+        orientations_cells = get_orientation_preference(data_store, self.sheet_name)
         idxs = data_store.get_sheet_indexes(self.sheet_name, seg.get_stored_spike_train_ids())
         idx_cells = [idx for idx in idxs if isclose(target_O, orientations_cells[idx], abs_tol=0.1)]
 
@@ -264,7 +272,7 @@ class OrientationTuningOrthoLowTarget(TargetValue):
         if not len(segments):
             return None
         seg = segments[0]
-        orientations_cells = get_orientation_preference(data_store, self.sheet_name).values
+        orientations_cells = get_orientation_preference(data_store, self.sheet_name)
         idxs = data_store.get_sheet_indexes(self.sheet_name, seg.get_stored_spike_train_ids())
         idx_cells = [idx for idx in idxs if isclose(target_O, orientations_cells[idx], abs_tol=0.1)]
 
@@ -290,7 +298,7 @@ class OrientationTuningOrthoLowTarget(TargetValue):
         return numpy.abs(spont_rate - spike_rate_ortho_low) / spont_rate
 
 
-class SizeTuning(TargetValue):
+class SizeTuning(OneBoundUpperTarget):
     def calculate_value(self, data_store):
         """Compute the percentage of cells that show a suppression above +20%"""
 
@@ -304,7 +312,7 @@ class SizeTuning(TargetValue):
         if not len(segments):
             return None
         seg = segments[0]
-        orientations_cells = get_orientation_preference(data_store, self.sheet_name).values
+        orientations_cells = get_orientation_preference(data_store, self.sheet_name)
         idxs = data_store.get_sheet_indexes(self.sheet_name, seg.get_stored_spike_train_ids())
         idx_cells = [idx for idx in idxs if isclose(target_O, orientations_cells[idx], abs_tol=0.1)]
 

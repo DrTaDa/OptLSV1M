@@ -6,6 +6,8 @@ pickled_datastore/
 # C extensions
 *.so
 
+figures/
+
 # Distribution / packaging
 .Python
 build/

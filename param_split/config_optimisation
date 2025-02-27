@@ -7,6 +7,7 @@
         "sheets.l4_cortex_inh.L4InhL4InhConnection.base_weight": [0.0012, 0.0035],
         "sheets.l4_cortex_inh.AfferentConnection.base_weight": [0.0015, 0.004],
         "sheets.l23_cortex_exc.L23ExcL23ExcConnection.base_weight": [0.000005, 0.00015],
+        "sheets.l23_cortex_exc.L23ExcL23ExcConnection_biais.base_weight": [0.000005, 0.00015],
         "sheets.l23_cortex_exc.L23ExcL23InhConnection.base_weight": [0.00005, 0.00035],
         "sheets.l23_cortex_exc.L4ExcL23ExcConnection.base_weight": [0.0005, 0.0028],
         "sheets.l23_cortex_exc.L23ExcL4ExcConnection.base_weight": [0.00018, 0.00040],
