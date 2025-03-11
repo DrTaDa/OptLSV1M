@@ -23,10 +23,10 @@
                             'E_inh': -80.0,
                             'tau_syn_exc': 1.5,
                             'tau_syn_inh': 4.2,
-                            'a': 4,
-                            'b': 80.5,
+                            'a': PyNNDistribution(name='normal', mu=4, sigma=1),
+                            'b': PyNNDistribution(name='normal', mu=80.5, sigma=10),
                             'Delta_T': 0.8,
-                            'tau_w': 144,
+                            'tau_w': PyNNDistribution(name='normal', mu=144, sigma=30),
                             'V_th': -57.0            
                         },
                        'initial_values': {

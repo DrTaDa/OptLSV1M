@@ -159,7 +159,7 @@ class Evaluator(ParameterSearch):
         score = self.evaluate_data_store(data_store)
         print(f"On pid {pid}. Done computing scores.")
 
-        #shutil.rmtree(subf)
+        shutil.rmtree(subf)
 
         print(f"On pid {pid}. Scores = {score}")
         return score

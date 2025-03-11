@@ -4,9 +4,9 @@ from evaluator import define_evaluator
 
 offspring_size = 12                 # Size of the population used by the optimizer
 timeout = 4000                      # Hard cut-off for the evaluation of an individual (in seconds)
-optimiser_seed = 36                  # random seed for the optimiser
-optimiser_sigma = 0.4               # width of the search at the first generation of the optimisation, default: 0.4
-optimiser_centroid = [0.00017231206360188508, 0.00026298300409550535, 0.0016793226341963673, 0.0015751607007732005, 0.0016999999993999998, 0.0024041080676130725, 7.753183982743447e-06, 0.00019637189182125067, 0.0020462807161389395, 0.0002866670645249675, 0.0001819611986992853, 0.0021409484254594794, 0.0005065733746189931, 0.0009413578992548964, 177.08156935468776, 2.510994895071973, 47.342716815999395, 138.28441625017956, 4.614509433730632, 41.36709644943765, 0.8982124828697061, 14.652718635458825, 39.146715382323286, 119.48306530300536] # List (optional): starting solution
+optimiser_seed = 666                  # random seed for the optimiser
+optimiser_sigma = 0.2               # width of the search at the first generation of the optimisation, default: 0.4
+optimiser_centroid = [8.307350226797982e-05, 0.0002852393907629799, 0.0019074007889368942, 0.002559973038428656, 0.003361197544247738, 0.003264451653058492, 6.1919434681979445e-06, 0.00012010447880314855, 0.0002662616437552525, 0.0032355307510103194, 0.0002410492201142536, 0.00023018498983994344, 0.002811734606022205, 0.00031761177483506317, 0.00299999999925, 177.13203394831413, 2.3522606763870484, 90.27087629563451, 204.88982867820556, 5.999999998, 50.06895499004019, 0.9666246212745299, 65.46773298352808, 66.50211711546561, 124.56722392199246] # List (optional): starting solution
 max_ngen = 100                      # Maximum number of generation of the optimiser
 continue_cp = False                 # Should the optimisation resume from the informed checkpoint file
 run_script = "run_experiment.py"    # Path to the Mozaik run script to use for evaluation
@@ -23,8 +23,8 @@ evaluator = define_evaluator(
 if not continue_cp:
     cp_filename = f"./{evaluator.optimization_id}/opt_check.pkl"       # Path to the checkpoint file of the optimisation
 else:
-    print("RESTARTING FROM CHECKPOINT")
-    cp_filename = "./20250224-224804_Optimization/opt_check.pkl"
+    print("RESUMING FROM CHECKPOINT")
+    cp_filename = ""
 
 map_function = mp.Pool(processes=offspring_size).map
 
@@ -37,7 +37,7 @@ optimizer = DEAPOptimisationCMA(
     selector_name="single_objective",
     use_stagnation_criterion=False,
     sigma=optimiser_sigma,
-    #centroids=[optimiser_centroid]
+    centroids=[optimiser_centroid]
 )
 
 optimizer.run(
