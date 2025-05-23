@@ -23,10 +23,10 @@
                             'E_inh': -80.0,
                             'tau_syn_exc': 1.5,
                             'tau_syn_inh': 4.2,
-                            'a': 4,
-                            'b': 80.5,
+                            'a': PyNNDistribution(name='normal', mu=4, sigma=1),
+                            'b': PyNNDistribution(name='normal', mu=80.5, sigma=10),
                             'Delta_T': 0.8,
-                            'tau_w': 144,
+                            'tau_w': PyNNDistribution(name='normal', mu=144, sigma=30),
                             'V_th': -57.0            
                         },
                        'initial_values': {
@@ -35,7 +35,7 @@
                     },
                 'artificial_stimulators': {},
                 'recording_interval':  1.0,                                                            
-                'recorders': url("param/l4_exc_rec"),
+                'recorders': url("param_split_1split/l4_exc_rec"),
     },
     'K' : 1000, # Number of synapses per neuron
     'feedback_conn_ratio': 0.2,

@@ -25,9 +25,9 @@
                             'tau_syn_exc': ref('sheets.l4_cortex_exc.params.cell.params.tau_syn_exc'),
                             'tau_syn_inh': ref('sheets.l4_cortex_exc.params.cell.params.tau_syn_inh'),
                             'a': 4,
-                            'b': 80.5,
+                            'b': 0,
                             'Delta_T': 0.8,
-                            'tau_w': 144,
+                            'tau_w': 1,
                         }, 
                         'initial_values': {
                                     'v': PyNNDistribution(name='uniform',low=-70,high=-54),
@@ -36,7 +36,7 @@
                     },
                 'artificial_stimulators' : ref('sheets.l4_cortex_exc.params.artificial_stimulators'),
                 'recording_interval'  :  ref('sheets.l4_cortex_exc.params.recording_interval'),                                            
-                'recorders' : url("param/l4_inh_rec"),    
+                'recorders' : url("param_split_1split/l4_inh_rec"),    
     },
         
     'L4InhL4ExcConnection': {

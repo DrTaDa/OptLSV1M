@@ -11,7 +11,6 @@ from mozaik.controller import run_workflow
 from model import SelfSustainedPushPull
 
 
-
 class MeasureSizeTuningOneSize(VisualExperiment):
 
     required_parameters = ParameterSet({

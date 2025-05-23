@@ -35,11 +35,12 @@
         },
         'artificial_stimulators': ref('sheets.l4_cortex_exc.params.artificial_stimulators'),
         'recording_interval':  ref('sheets.l4_cortex_exc.params.recording_interval'),                                            
-        'recorders' : url("param_split/l23_exc_rec"),    
+        'recorders' : url("param_split_1split/l23_exc_rec"),    
     },
     'layer23_aff_ratio' : 0.22,
     'feedback_arborization_ratio' : 1,
     'K' : 2300, # Number of synapses per neuron
+    'percentage_bias': 0.05,
     'L23ExcL23ExcConnection': {
         'target_synapses' : 'excitatory', 
         'short_term_plasticity': {
@@ -63,7 +64,7 @@
         'weight_expression' : 'f1',
         'num_samples_expression' : ref('sheets.l4_cortex_exc.L4ExcL4ExcConnection.num_samples_expression'),
         'base_weight': 0.0001565,
-        'num_samples' : 0.95*ref('sheets.l23_cortex_exc.K') * 4/5 * (1 - ref('sheets.l23_cortex_exc.layer23_aff_ratio')),
+        'num_samples' : (1-ref('sheets.l23_cortex_exc.percentage_bias'))*ref('sheets.l23_cortex_exc.K') * 4/5 * (1 - ref('sheets.l23_cortex_exc.layer23_aff_ratio')),
         'local_module': None,
     },
     'L23ExcL23ExcConnection_biais': {
@@ -98,7 +99,7 @@
         'weight_expression' : 'f1*f3',
         'num_samples_expression' : ref('sheets.l4_cortex_exc.L4ExcL4ExcConnection.num_samples_expression'),
         'base_weight': 0.0005,
-        'num_samples' : 0.05*ref('sheets.l23_cortex_exc.K')*4/5*(1-ref('sheets.l23_cortex_exc.layer23_aff_ratio')),
+        'num_samples' : ref('sheets.l23_cortex_exc.percentage_bias')*ref('sheets.l23_cortex_exc.K')*4/5*(1-ref('sheets.l23_cortex_exc.layer23_aff_ratio')),
         'local_module': None,
     },
     'L23ExcL23InhConnection': {
